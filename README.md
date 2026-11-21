@@ -19,12 +19,12 @@ Set the Sleeper league ID, writing model, public URL, and optional standings, aw
 | `src/data/` | Fetch Sleeper history, rosters, upcoming fixtures, and the cached NFL player directory. |
 | `src/analysis/` | Calculate standings, matchup results, position-group margins, league slot rankings, recent scoring trends, and single-slot bench comparisons. |
 | `src/editorial/` | Run the local Codex writer and search the live web for dated, attributable reporting from the NFL and its teams. |
-| `src/site/components/` | Render reusable matchup, team analysis, standings, weekly award, preview, and NFL notebook sections. |
-| `docs/assets/js/` | Add the accessible position-by-position score replay, eligible bench-swap simulator, team jump, and browser-local picks. |
+| `src/site/components/` | Render highlights from verified results, manager identities and profiles, matchup analysis, standings, and sourced previews. |
+| `docs/assets/js/` | Control the highlight reel, manager profile dialog, standings comparison, position replay, bench simulator, roast draw, and browser-local picks. |
 | `docs/` | Serve the current static edition and its locally hosted assets through GitHub Pages. |
 | `test/` | Exercise scoring, player coverage, editorial fallback, source verification, and the rendered edition. |
 
-The entry point is `src/weekly.js`. The current issue’s prose and dated sources are saved in `edition.json`. Each manager has an expandable player breakdown. Starter rankings compare players in the same assigned league slot. Historical player averages use recorded scores from the preceding three league weeks. Bench scenarios change a single eligible slot, keeping the opponent and all other selections fixed.
+The entry point is `src/weekly.js`. The current issue’s prose and dated sources are saved in `edition.json`. Each manager has a shareable profile at `#manager-<roster_id>` with their weekly result, lineup, and next matchup. The reel links featured decisions directly to the simulator. Readers who prefer reduced motion can step through the reel manually. The full issue and native player disclosures also work with JavaScript disabled. Starter rankings compare players in the same assigned league slot. Historical player averages use recorded scores from the preceding three league weeks. Bench scenarios change a single eligible slot, keeping the opponent and all other selections fixed.
 
 Each upcoming fixture combines the two listed lineups, recent player form, and a search for target-week NFL matchup reporting. The website can display the fantasy scouting without a verified article. Reader picks stay in the browser. The replay groups points by lineup position and includes team adjustments. The bench simulator recalculates a single eligible move with the final scores.
 

@@ -5,6 +5,9 @@ import { eligible } from "../src/analysis/lineups.js";
 import { writeManagers } from "../src/editorial/writing.js";
 import { render } from "../src/site/render.js";
 
+import { buildHighlights } from "../src/site/components/highlights.js";
+import { labGames } from "../src/site/components/matchup-lab.js";
+
 function sample() {
   const row = (id, a, b, qb) => ({
     roster_id: id,
@@ -260,4 +263,67 @@ test("lab exposes only eligible swaps and safely serializes team names", async (
   assert.equal(lab[0].teams[0].name, "</script><fake>");
   assert.deepEqual(lab[0].teams[0].reserves, []);
   assert.deepEqual(lab[0].teams[1].reserves[0].targets, ["w2"]);
+});
+
+test("highlight cues select a result-changing eligible swap and its exact starter", () => {
+  const data = sample();
+  data.directory.q1.positions = ["TE"];
+  data.directory.q2.positions = ["RB"];
+  const f = buildFacts(data);
+  const scenes = buildHighlights(f, labGames(f), true);
+  assert.deepEqual(
+    scenes.map((s) => s.kind),
+    ["result", "swap", "preview"],
+  );
+  const swap = scenes[1];
+  assert.equal(swap.game, f.games[0].id);
+  assert.equal(swap.teams[0].id, 2);
+  assert.equal(swap.inId, "q2");
+  assert.equal(swap.outId, "r2");
+  assert.equal(swap.metric, "+25.00");
+  assert.equal(swap.teams[0].score + 2500 - swap.teams[1].score, 1000);
+});
+
+test("a tie, no eligible bench move, and a completed championship have usable highlights", () => {
+  const data = sample();
+  data.history[0].forEach((r) => (r.custom_points = 22));
+  data.league.status = "complete";
+  data.league.settings.playoff_week_start = 1;
+  data.bracket = [{ p: 1, w: 2 }];
+  data.next = [];
+  const f = buildFacts(data);
+  const scenes = buildHighlights(f, labGames(f), true);
+  assert.deepEqual(
+    scenes.map((s) => s.kind),
+    ["result", "star", "champion"],
+  );
+  assert.match(scenes[0].title, /draw/);
+  assert.equal(scenes[2].teams[0].id, 2);
+});
+
+test("the standings switch appears only when the prior records are known", async () => {
+  const data = sample();
+  const issue = {
+    managers: await writeManagers(
+      buildFacts(data),
+      null,
+      "test",
+      async () => [],
+    ),
+    publishedAt: "2026-11-21",
+  };
+  assert.doesNotMatch(
+    render(buildFacts(data), issue, allColumns),
+    /data-period="prior"/,
+  );
+  data.history.push(structuredClone(data.history[0]));
+  data.rosters[0].settings.wins++;
+  data.rosters[1].settings.losses++;
+  data.week++;
+  const facts = buildFacts(data);
+  assert.deepEqual(facts.teams[2].priorRecord, { wins: 0, losses: 1, ties: 0 });
+  assert.match(
+    render(facts, issue, allColumns),
+    /data-record-now="0–2" data-record-prior="0–1"/,
+  );
 });

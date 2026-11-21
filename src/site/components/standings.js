@@ -19,9 +19,11 @@ export function standingsPanel(f) {
         : "";
     note = `${movement}${inside.name} holds the last playoff spot at ${record(inside)}, with ${outside.name} chasing at ${record(outside)}.`;
   }
+  const compare = standings.length && standings.every((t) => t.priorRecord);
   return `<section id="standings" class="side-panel"><div class="side-heading"><span class="eyebrow">${f.playoff ? "Regular season" : "Playoff race"}</span><h2>The standings</h2></div>
-    <table><caption class="sr-only">Standings after Week ${f.week}</caption><thead><tr><th scope="col">Rank</th><th scope="col">Team</th><th scope="col">W–L${standings.some((t) => t.ties) ? "–T" : ""}</th></tr></thead><tbody>
-    ${standings.map((t, i) => `<tr><td>${t.rank}</td><th scope="row"><a href="#manager-${t.id}">${esc(t.name)}</a></th><td>${record(t)}</td></tr>${i + 1 === cutoff && outside ? '<tr class="cut"><td colspan="3">Playoff cutoff</td></tr>' : ""}`).join("")}</tbody></table><p class="cut-note">${esc(note)}</p></section>`;
+    ${compare ? `<div class="week-switch" data-enable-js hidden aria-label="Standings week"><button type="button" data-period="prior" aria-pressed="false">Week ${f.week - 1}</button><button type="button" data-period="current" aria-pressed="true">Week ${f.week}</button></div>` : ""}
+    <table data-cut="${cutoff}" data-week="${f.week}"><caption class="sr-only">Standings after Week ${f.week}</caption><thead><tr><th scope="col">Rank</th><th scope="col">Team</th><th scope="col">W–L${standings.some((t) => t.ties) ? "–T" : ""}</th></tr></thead><tbody>
+    ${standings.map((t, i) => `<tr data-rank-now="${t.rank}" data-rank-prior="${t.priorRank ?? t.rank}" data-record-now="${record(t)}" data-record-prior="${record(t.priorRecord ?? t)}"><td>${t.rank}</td><th scope="row"><a href="#manager-${t.id}">${esc(t.name)}</a></th><td>${record(t)}</td></tr>${i + 1 === cutoff && outside ? '<tr class="cut"><td colspan="3">Playoff cutoff</td></tr>' : ""}`).join("")}</tbody></table><p class="cut-note">${esc(note)}</p></section>`;
 }
 
 export function awardPanel(f) {

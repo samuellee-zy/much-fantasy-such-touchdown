@@ -18,6 +18,9 @@ export function mountLab(root) {
   const range = root.querySelector("#reveal"),
     play = root.querySelector("[data-play]"),
     status = root.querySelector(".lab-call");
+  const sequence = root.querySelector("[data-sequence]"),
+    tickets = root.querySelector(".swap-tickets"),
+    effect = root.querySelector(".lab-effect");
   const stepText = root.querySelector("[data-step]"),
     stage = root.querySelector(".lab-stage"),
     meter = root.querySelector(".lab-meter i");
@@ -32,7 +35,7 @@ export function mountLab(root) {
   function stop() {
     clearInterval(timer);
     timer = null;
-    play.textContent = "Play replay";
+    play.textContent = reduced() ? "Next slot" : "Play replay";
   }
   function draw(values, animate = false) {
     cancelAnimationFrame(frame);
@@ -77,6 +80,9 @@ export function mountLab(root) {
   function show(animate = false) {
     const teams = pair.teams;
     teamEls.forEach((el, i) => (el.textContent = teams[i].name));
+    sequence.hidden = mode !== "replay";
+    effect.classList.remove("celebrate");
+    effect.replaceChildren();
     if (mode === "replay") {
       const step = Number(range.value),
         slots = steps.slice(0, step);
@@ -91,6 +97,10 @@ export function mountLab(root) {
         ),
       );
       draw(values, animate);
+      [...sequence.children].forEach((label, i) => {
+        label.classList.toggle("counted", i < step);
+        label.classList.toggle("current", i === step - 1);
+      });
       const last = slots.at(-1),
         full = step === steps.length;
       stepText.textContent = full
@@ -99,6 +109,11 @@ export function mountLab(root) {
           ? `Through ${last} · ${step}/${steps.length}`
           : "Before the first slot";
       range.setAttribute("aria-valuetext", stepText.textContent);
+      const lead = values[0] - values[1];
+      const runningMargin =
+        lead === 0
+          ? "Level on points."
+          : `${teams[lead > 0 ? 0 : 1].name} leads by ${money(Math.abs(lead))}.`;
       if (full)
         status.textContent =
           values[0] === values[1]
@@ -106,7 +121,7 @@ export function mountLab(root) {
             : `${teams[values[0] > values[1] ? 0 : 1].name} won by ${money(Math.abs(values[0] - values[1]))} points.`;
       else
         status.textContent = last
-          ? `${last} added ${money(values[0] - (step > 1 ? sumThrough(teams[0], step - 1) : 0))} for ${teams[0].name} and ${money(values[1] - (step > 1 ? sumThrough(teams[1], step - 1) : 0))} for ${teams[1].name}.`
+          ? `${last} added ${money(values[0] - (step > 1 ? sumThrough(teams[0], step - 1) : 0))} for ${teams[0].name} and ${money(values[1] - (step > 1 ? sumThrough(teams[1], step - 1) : 0))} for ${teams[1].name}. ${runningMargin}`
           : "Move the slider or press play to add each position group.";
     } else {
       const i = Number(side.value),
@@ -120,18 +135,51 @@ export function mountLab(root) {
       draw(values, animate);
       const margin = values[i] - other.score,
         original = own.score - other.score;
+      tickets.hidden = !incoming || !outgoing;
+      if (incoming && outgoing) {
+        tickets.querySelector('[data-transfer="in"]').textContent =
+          incoming.name + " · " + money(incoming.score);
+        tickets.querySelector('[data-transfer="out"]').textContent =
+          outgoing.name + " · " + money(outgoing.score);
+        if (animate && !reduced())
+          for (const [i, ticket] of [...tickets.children].entries()) {
+            ticket.animate(
+              [
+                {
+                  opacity: 0.4,
+                  transform: `translateX(${i ? 22 : -14}px) rotate(${i ? 3 : -2}deg)`,
+                },
+                { opacity: 1, transform: "none" },
+              ],
+              { duration: 340, easing: "ease-out" },
+            );
+          }
+        if (margin > 0 && original < 0) {
+          effect.textContent = "Lead change";
+          effect.classList.add("celebrate");
+          if (animate && !reduced())
+            effect.animate(
+              [
+                { transform: "scale(.9)" },
+                { transform: "scale(1.06)" },
+                { transform: "scale(1)" },
+              ],
+              { duration: 440 },
+            );
+        }
+      }
       if (!incoming || !outgoing) {
         status.textContent =
           "No comparable single-slot swap is available for this team.";
         return;
       }
-      const effect =
+      const verdict =
         margin === 0
           ? "takes the game to a tie"
           : Math.sign(margin) !== Math.sign(original)
             ? `changes the result to a ${money(Math.abs(margin))}-point ${margin > 0 ? "win" : "loss"}`
             : `leaves a ${money(Math.abs(margin))}-point ${margin > 0 ? "win" : "loss"}`;
-      status.textContent = `Starting ${incoming.name} for ${outgoing.name} ${delta >= 0 ? "adds" : "costs"} ${money(Math.abs(delta))} points and ${effect}.`;
+      status.textContent = `Starting ${incoming.name} for ${outgoing.name} ${delta >= 0 ? "adds" : "costs"} ${money(Math.abs(delta))} points and ${verdict}.`;
     }
   }
   function sumThrough(t, n) {
@@ -143,6 +191,13 @@ export function mountLab(root) {
     steps = [...new Set(pair.teams.flatMap((t) => Object.keys(t.units)))];
     if (pair.teams.some((t) => sumThrough(t, steps.length) !== t.score))
       steps.push("Team adjustment");
+    sequence.replaceChildren(
+      ...steps.map((slot) => {
+        const label = document.createElement("span");
+        label.textContent = slot;
+        return label;
+      }),
+    );
     range.max = steps.length;
     range.value = steps.length;
     options(
@@ -202,6 +257,36 @@ export function mountLab(root) {
   document.addEventListener("visibilitychange", () => {
     if (document.hidden) stop();
   });
+  matchMedia("(prefers-reduced-motion: reduce)").addEventListener(
+    "change",
+    stop,
+  );
+  function cue(data) {
+    const selected = games.find((g) => g.id === Number(data.cue));
+    if (!selected) return;
+    game.value = selected.id;
+    changeGame();
+    root
+      .querySelector('[data-mode="' + (data.inId ? "swap" : "replay") + '"]')
+      .click();
+    if (data.inId) {
+      side.value = selected.teams.findIndex(
+        (t) => t.id === Number(data.sideId),
+      );
+      resetBench();
+      bench.value = data.inId;
+      resetStarter();
+      starter.value = data.outId;
+      show(true);
+    } else {
+      range.value = 0;
+      show();
+      if (!reduced()) play.click();
+    }
+    root.focus({ preventScroll: true });
+  }
+  root.tabIndex = -1;
   root.hidden = false;
   changeGame();
+  return { cue, stop };
 }

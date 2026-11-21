@@ -124,6 +124,10 @@ export function buildFacts({
       id,
       name,
       manager,
+      avatar:
+        typeof owner?.avatar === "string" && /^[a-f0-9]+$/i.test(owner.avatar)
+          ? owner.avatar
+          : null,
       wins,
       losses,
       ties,
@@ -175,7 +179,10 @@ export function buildFacts({
         pa: t.pa - byId[t.opponent].score,
       })),
     );
-    for (const t of previous) byId[t.id].priorRank = t.rank;
+    for (const t of previous) {
+      byId[t.id].priorRank = t.rank;
+      byId[t.id].priorRecord = { wins: t.wins, losses: t.losses, ties: t.ties };
+    }
   }
   compareLineups(teams);
   const titleGame = bracket?.find((g) => g.p === 1);
@@ -222,6 +229,7 @@ export function buildFacts({
     nextPlayoff,
     final,
     champion: champion?.name,
+    championId: champion?.id,
     teams: byId,
     standings,
     games,

@@ -1,5 +1,23 @@
-import { mountLab } from "./lab.js";
-mountLab(document.querySelector("#lab"));
+import { mountLab } from "./lab.js?v=2";
+import { mountProfiles } from "./profile.js";
+import { mountReel } from "./reel.js";
+import { mountStandings } from "./standings.js";
+const lab = mountLab(document.querySelector("#lab"));
+const pauseReel = mountReel(document.querySelector("#highlights"), (data) =>
+  lab?.cue(data),
+);
+const openProfile = mountProfiles(document.querySelector("#profile"), () => {
+  pauseReel();
+  lab?.stop();
+});
+mountStandings(document.querySelector("#standings"));
+function failedPortrait(img) {
+  if (img.matches?.(".portrait img")) img.hidden = true;
+}
+document.addEventListener("error", (e) => failedPortrait(e.target), true);
+document.querySelectorAll(".portrait img").forEach((img) => {
+  if (img.complete && !img.naturalWidth) failedPortrait(img);
+});
 document
   .querySelectorAll("[data-enable-js]")
   .forEach((el) => (el.hidden = false));
@@ -36,28 +54,15 @@ const jump = document.querySelector("#team-jump");
 jump?.addEventListener("change", () => {
   const team = document.getElementById("manager-" + jump.value);
   if (!team) return;
-  const details = team.querySelector("details");
-  if (details) {
-    details.open = true;
-    details.querySelector("summary")?.focus({ preventScroll: true });
-  }
-  team.scrollIntoView({
-    behavior: matchMedia("(prefers-reduced-motion: reduce)").matches
-      ? "instant"
-      : "smooth",
-    block: "start",
-  });
-  history.replaceState(null, "", "#" + team.id);
+  if (openProfile) openProfile(jump.value, jump);
+  else location.hash = team.id;
+  jump.value = "";
 });
 
 const draw = document.querySelector("#roast-draw");
 const pool = [...document.querySelectorAll(".manager .roast")].map((el) => {
   const team = el.closest(".manager");
-  const name = [...team.querySelector("h4").childNodes]
-    .filter((n) => n.nodeType === Node.TEXT_NODE)
-    .map((n) => n.textContent)
-    .join("")
-    .trim();
+  const name = team.dataset.name;
   return { id: team.id, name, quip: el.querySelector("p").textContent };
 });
 if (draw && pool.length) {
@@ -82,7 +87,10 @@ if (draw && pool.length) {
       await line.animate(
         [
           { opacity: 1, transform: "translateY(0)" },
-          { opacity: 0, transform: "translateY(-7px)" },
+          {
+            opacity: 0,
+            transform: "perspective(600px) rotateY(-75deg) translateX(-8px)",
+          },
         ],
         { duration: 140 },
       ).finished;
@@ -92,12 +100,15 @@ if (draw && pool.length) {
     line.replaceChildren(title, document.createTextNode(pick.quip));
     link.href = "#" + pick.id;
     link.hidden = false;
-    button.textContent = "Draw another";
+    button.textContent = "Deal another";
     button.disabled = false;
     if (!matchMedia("(prefers-reduced-motion: reduce)").matches)
       line.animate?.(
         [
-          { opacity: 0.1, transform: "translateY(8px) rotate(-1deg)" },
+          {
+            opacity: 0.1,
+            transform: "perspective(600px) rotateY(70deg) translateX(12px)",
+          },
           { opacity: 1, transform: "none" },
         ],
         { duration: 260 },

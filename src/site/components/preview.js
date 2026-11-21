@@ -1,3 +1,4 @@
+import { identity } from "./identity.js";
 import { fixtureKey } from "../../analysis/fixtures.js";
 import { points, ordinal, record } from "../../analysis/format.js";
 import { esc } from "../html.js";
@@ -69,7 +70,7 @@ export function previewSection(f, research) {
       ? f.upcoming
           .map((g, i) => {
             const [a, b] = g.ids.map((id) => f.teams[id]);
-            return `<article class="fixture ${i === 0 ? "featured" : ""}">${i === 0 ? '<span class="eyebrow">Game to watch</span>' : ""}<h3>${esc(a.name)} <span>vs.</span> ${esc(b.name)}</h3><p>${esc(previewHook(g, a, b, i === 0, f))}</p>${scouting(g, f, research?.articles?.[fixtureKey(g)])}${ballot(g, f)}</article>`;
+            return `<article id="fixture-${fixtureKey(g)}" data-teams="${g.ids.join(" ")}" class="fixture ${i === 0 ? "featured" : ""}">${i === 0 ? '<span class="eyebrow">Game to watch</span>' : ""}<h3>${identity(a)} <span>vs.</span> ${identity(b)}</h3><p>${esc(previewHook(g, a, b, i === 0, f))}</p>${scouting(g, f, research?.articles?.[fixtureKey(g)])}${ballot(g, f)}</article>`;
           })
           .join("")
       : "<p>Sleeper has yet to assign the next pairings.</p>"
