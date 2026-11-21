@@ -19,5 +19,5 @@ export function managerReport(t, entry, opponent) {
     entry.quip && entry.text.endsWith(entry.quip)
       ? entry.text.slice(0, -entry.quip.length).trimEnd()
       : entry.text;
-  return `<section class="manager" id="manager-${t.id}" data-manager="${t.id}" data-name="${esc(t.name)}" data-handle="${esc(t.manager)}" data-rank="${ordinal(t.rank)}" data-record="${record(t)}" data-points="${t.score === null ? "—" : points(t.score)}" data-opponent="${esc(opponent?.name || "")}"><h4><span class="outcome ${t.result || "idle"}">${{ win: "W", loss: "L", tie: "T" }[t.result] || "–"}</span>${identity(t, true)}</h4><p>${esc(analysis)}</p>${entry.quip ? `<div class="roast"><b>The roast</b><p>${esc(entry.quip)}</p></div>` : ""}${teamAnalysis(t)}</section>`;
+  return `<section class="manager" id="manager-${t.id}" data-manager="${t.id}" data-name="${esc(t.name)}" data-handle="${esc(t.manager)}" data-rank="${ordinal(t.rank)}" data-record="${record(t)}" data-points="${t.score === null ? "—" : points(t.score)}" data-opponent="${esc(opponent?.name || "")}"><h4 id="wrapped-${t.id}"><span class="outcome ${t.result || "idle"}">${{ win: "W", loss: "L", tie: "T" }[t.result] || "–"}</span>${identity(t, true)}</h4><p>${esc(analysis)}</p>${entry.quip ? `<div class="roast"><b>The roast</b><p>${esc(entry.quip)}</p></div>` : ""}${teamAnalysis(t)}</section>`;
 }

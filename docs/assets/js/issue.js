@@ -1,6 +1,6 @@
 import { mountLab } from "./lab.js?v=2";
-import { mountProfiles } from "./profile.js";
-import { mountReel } from "./reel.js";
+import { mountProfiles } from "./profile.js?v=3";
+import { mountReel } from "./reel.js?v=3";
 import { mountStandings } from "./standings.js";
 const lab = mountLab(document.querySelector("#lab"));
 const pauseReel = mountReel(document.querySelector("#highlights"), (data) =>
@@ -54,7 +54,7 @@ const jump = document.querySelector("#team-jump");
 jump?.addEventListener("change", () => {
   const team = document.getElementById("manager-" + jump.value);
   if (!team) return;
-  if (openProfile) openProfile(jump.value, jump);
+  if (openProfile) openProfile(jump.value, jump, "wrapped");
   else location.hash = team.id;
   jump.value = "";
 });

@@ -6,6 +6,7 @@ import { writeManagers } from "../src/editorial/writing.js";
 import { render } from "../src/site/render.js";
 
 import { buildHighlights } from "../src/site/components/highlights.js";
+import { managerStories } from "../src/site/components/wrapped.js";
 import { labGames } from "../src/site/components/matchup-lab.js";
 
 function sample() {
@@ -326,4 +327,46 @@ test("the standings switch appears only when the prior records are known", async
     render(facts, issue, allColumns),
     /data-record-now="0–2" data-record-prior="0–1"/,
   );
+});
+
+test("Wrapped tells each manager's own result, top starter, eligible swap, roast and upcoming game", () => {
+  const data = sample();
+  data.directory.q2.positions = ["RB"];
+  const facts = buildFacts(data);
+  const issue = {
+    managers: { 1: { quip: "Winner quip." }, 2: { quip: "Runner-up quip." } },
+  };
+  const stories = managerStories(facts, facts.teams[2], issue, true);
+  assert.deepEqual(
+    stories.map((s) => s.kind),
+    ["score", "star", "bench", "roast", "next"],
+  );
+  assert.equal(stories[0].value, "22.00");
+  assert.equal(stories[1].title, "Receiver2");
+  assert.equal(stories[2].value, "+25.00");
+  assert.match(stories[2].body, /10.00-point win/);
+  assert.equal(stories[3].title, "Runner-up quip.");
+  assert.match(stories[4].title, /<Alice>/);
+  data.history[0][1].custom_points = 22;
+  const adjusted = buildFacts(data);
+  assert.equal(
+    managerStories(adjusted, adjusted.teams[2], issue, true)[2].unit,
+    "all-play record",
+  );
+});
+
+test("a manager on a playoff bye gets a shareable story without fabricated scores", () => {
+  const data = sample();
+  const facts = buildFacts(data);
+  const team = { ...facts.teams[1], lineup: undefined, score: null };
+  facts.upcoming = [];
+  facts.final = true;
+  const cards = managerStories(facts, team, { managers: {} }, true);
+  assert.deepEqual(
+    cards.map((s) => s.kind),
+    ["score", "next"],
+  );
+  assert.equal(cards[0].unit, "season record");
+  assert.equal(cards[1].label, "The final whistle");
+  assert.doesNotMatch(JSON.stringify(cards), /NaN|undefined/);
 });

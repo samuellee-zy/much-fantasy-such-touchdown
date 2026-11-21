@@ -1,11 +1,19 @@
+import { mountWrapped } from "./wrapped.js";
 const reduce = matchMedia("(prefers-reduced-motion: reduce)");
-const fragmentId = () => location.hash.match(/^#manager-(\d+)$/)?.[1];
+const fragment = () => location.hash.match(/^#(manager|wrapped)-(\d+)$/);
 export function mountProfiles(dialog, pause) {
   if (!dialog?.showModal) return;
   const find = (id) => document.getElementById("manager-" + id);
   const content = dialog.querySelector(".profile-content"),
     head = dialog.querySelector(".profile-identity");
+  const profile = dialog.querySelector(".profile-shell");
+  const wrap = dialog.querySelector(".wrapped-shell");
+  const viewer = mountWrapped(
+    wrap,
+    JSON.parse(dialog.querySelector("#wrapped-data").textContent),
+  );
   let current,
+    currentView,
     opener,
     originScroll = 0,
     closing,
@@ -92,7 +100,7 @@ export function mountProfiles(dialog, pause) {
       );
     content.scrollTop = 0;
   }
-  function display(id, trigger) {
+  function display(id, trigger, view = "manager") {
     const report = find(id);
     if (!report) return;
     pause();
@@ -101,6 +109,17 @@ export function mountProfiles(dialog, pause) {
       originScroll = scrollY;
     }
     current = report;
+    currentView = view;
+    const wrapped = view === "wrapped";
+    profile.hidden = wrapped;
+    wrap.hidden = !wrapped;
+    dialog.classList.toggle("is-wrapped", wrapped);
+    dialog.setAttribute(
+      "aria-labelledby",
+      wrapped ? "wrapped-title" : "profile-title",
+    );
+    wrap.querySelector(".profile-url").hidden = true;
+    wrap.querySelector("[data-share]").textContent = "Copy Wrapped link";
     dialog.querySelector(".profile-url").hidden = true;
     dialog.querySelector("[data-share]").textContent = "Copy link";
     const d = report.dataset;
@@ -124,27 +143,35 @@ export function mountProfiles(dialog, pause) {
       box.append(small, b);
       stats.append(box);
     }
-    tab("week");
+    if (wrapped)
+      viewer.show(d, Boolean(trigger), report.querySelector(".portrait"));
+    else {
+      viewer.pause();
+      tab("week");
+    }
     if (!dialog.open) {
       dialog.showModal();
       document.documentElement.classList.add("profile-open");
     }
-    dialog.querySelector("[data-dismiss]").focus({ preventScroll: true });
-    flight(trigger);
+    (wrapped ? wrap : profile)
+      .querySelector("[data-dismiss]")
+      .focus({ preventScroll: true });
+    if (!wrapped) flight(trigger);
   }
-  function open(id, trigger) {
+  function open(id, trigger, view = "manager") {
     if (!find(id)) return;
     if (!dialog.open) {
       history.pushState(
         { ...history.state, tdProfile: true },
         "",
-        "#manager-" + id,
+        "#" + view + "-" + id,
       );
-    } else history.replaceState(history.state, "", "#manager-" + id);
-    display(id, trigger);
+    } else history.replaceState(history.state, "", "#" + view + "-" + id);
+    display(id, trigger, view);
   }
   function shut() {
     if (!dialog.open) return;
+    viewer.pause();
     dialog.close();
     document.documentElement.classList.remove("profile-open");
     content.replaceChildren();
@@ -161,7 +188,7 @@ export function mountProfiles(dialog, pause) {
   async function dismiss() {
     if (closing || !dialog.open) return;
     closing = true;
-    const anim = flight(opener, true);
+    const anim = currentView === "manager" && flight(opener, true);
     if (anim) await anim.finished.catch(() => {});
     if (dialog.open) {
       if (history.state?.tdProfile) {
@@ -187,31 +214,41 @@ export function mountProfiles(dialog, pause) {
   });
   dialog.addEventListener("click", (e) => {
     if (e.target === dialog || e.target.closest("[data-dismiss]")) dismiss();
+    if (e.target.closest("[data-open-wrapped]"))
+      open(current.dataset.manager, e.target, "wrapped");
+    if (e.target.closest("[data-wrap-profile]"))
+      open(current.dataset.manager, null, "manager");
     const b = e.target.closest("[data-profile-tab]");
     if (b) tab(b.dataset.profileTab);
   });
-  dialog.querySelector("[data-share]").addEventListener("click", async (e) => {
-    const button = e.currentTarget;
-    const url = new URL(location.pathname, location.origin);
-    url.hash = "manager-" + current.dataset.manager;
-    try {
-      await navigator.clipboard.writeText(url.href);
-      if (location.hash === url.hash) button.textContent = "Link copied";
-    } catch {
-      const input = dialog.querySelector(".profile-url");
-      input.value = url.href;
-      input.hidden = false;
-      input.select();
-    }
-  });
+  dialog.querySelectorAll("[data-share]").forEach((share) =>
+    share.addEventListener("click", async (e) => {
+      const button = e.currentTarget;
+      const url = new URL(location.pathname, location.origin);
+      url.hash = currentView + "-" + current.dataset.manager;
+      viewer.pause();
+      try {
+        await navigator.clipboard.writeText(url.href);
+        if (location.hash === url.hash) button.textContent = "Link copied";
+      } catch {
+        const input = button
+          .closest(".profile-shell,.wrapped-shell")
+          .querySelector(".profile-url");
+        input.value = url.href;
+        input.hidden = false;
+        input.select();
+      }
+    }),
+  );
   dialog.addEventListener("cancel", (e) => {
     e.preventDefault();
     dismiss();
   });
   function sync() {
-    const id = fragmentId();
+    const [, view, id] = fragment() || [];
     if (id && find(id)) {
-      if (current?.dataset.manager !== id) display(id, null);
+      if (current?.dataset.manager !== id || currentView !== view)
+        display(id, null, view);
     } else shut();
   }
   window.addEventListener("popstate", sync);

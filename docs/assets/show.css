@@ -885,3 +885,20 @@
     }
   }
 }
+/* Overlap the chapters in one grid cell so the tallest story sizes the stage. */
+.reel-stage {
+  display: grid;
+}
+.reel-stage > .reel-scene {
+  grid-area: 1 / 1;
+}
+.reel-stage > .reel-scene[hidden] {
+  display: grid !important;
+  visibility: hidden;
+  pointer-events: none;
+}
+@media print {
+  .reel-stage > .reel-scene[hidden] {
+    display: none !important;
+  }
+}

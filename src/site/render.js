@@ -1,4 +1,5 @@
 import { buildHighlights, highlightReel } from "./components/highlights.js";
+import { wrappedViewer } from "./components/wrapped.js";
 import { profileDialog } from "./components/identity.js";
 import { labGames, matchupLab } from "./components/matchup-lab.js";
 import { notebookPanel } from "./components/notebook.js";
@@ -35,7 +36,7 @@ export function render(f, issue, columns) {
   const link = `https://sleeper.com/leagues/${encodeURIComponent(f.leagueId)}`;
   return `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>${esc(title)}</title><meta name="description" content="${esc(lead.deck)}"><meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(lead.deck)}"><meta name="theme-color" content="#143b30"><link rel="stylesheet" href="./assets/paper.css"><link rel="stylesheet" href="./assets/show.css"><script type="module" src="./assets/js/issue.js?v=2"></script></head>
+<title>${esc(title)}</title><meta name="description" content="${esc(lead.deck)}"><meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(lead.deck)}"><meta name="theme-color" content="#143b30"><link rel="stylesheet" href="./assets/paper.css"><link rel="stylesheet" href="./assets/show.css?v=3"><link rel="stylesheet" href="./assets/wrapped.css"><script type="module" src="./assets/js/issue.js?v=3"></script></head>
 <body data-issue="${esc(f.leagueId)}-${esc(f.season)}-${f.week + 1}"><a class="skip" href="#recap">Skip to matchups</a><header class="bar"><div class="wrap toolbar"><a href="#top" class="brand"><span class="ball" aria-hidden="true"><i></i></span>${esc(f.name)}</a>
 <nav aria-label="Issue sections"><a href="#recap">Results</a>${notebook ? '<a href="#notebook">NFL notebook</a>' : ""}${columns.standings ? '<a href="#standings">Standings</a>' : ""}${columns.preview ? '<a href="#next">Week ahead</a>' : ""}</nav><a class="sleeper" href="${link}">View on Sleeper</a></div></header>
 <main class="wrap" id="top"><div class="mast"><p class="mast-title">The Touchdown Post</p><div class="issue-date"><span>${esc(f.season)} SEASON</span><time datetime="${esc(issue.publishedAt.slice(0, 10))}">${date}</time></div></div>
@@ -45,7 +46,7 @@ ${matchupLab(f, games)}<div class="body-grid"><section id="recap"><div class="se
 ${f.games.map((g) => resultCard(g, f, issue.managers, closest.id)).join("")}${idle.length ? '<article class="match"><h3>Off the slate</h3>' + idle.map((t) => managerReport(t, issue.managers[t.id])).join("") + "</article>" : ""}</section>
 <aside><section id="roast-draw" class="roast-draw" hidden><span class="eyebrow">League banter</span><h2>Roast roulette</h2><p data-draw-result aria-live="polite">Deal a manager’s roast from this week’s results.</p><div><button type="button">Draw a roast</button><a data-draw-link hidden>Read the recap</a></div></section>${columns.standings ? standingsPanel(f) : ""}${columns.awards ? awardPanel(f) : ""}${notebook}</aside></div>
 ${columns.preview ? previewSection(f, issue.previewResearch) : ""}</main>
-<footer><div class="wrap"><b>The Touchdown Post</b><span>Week ${f.week} · ${esc(f.season)}</span><a href="${link}">League data from Sleeper</a></div></footer>${profileDialog()}</body></html>\n`.replace(
+<footer><div class="wrap"><b>The Touchdown Post</b><span>Week ${f.week} · ${esc(f.season)}</span><a href="${link}">League data from Sleeper</a></div></footer>${profileDialog(wrappedViewer(f, issue, columns.preview))}</body></html>\n`.replace(
     /[ \t]+$/gm,
     "",
   );
