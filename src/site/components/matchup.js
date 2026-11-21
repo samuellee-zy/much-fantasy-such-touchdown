@@ -14,5 +14,9 @@ export function resultCard(game, f, copy, closestId) {
   </article>`;
 }
 export function managerReport(t, entry) {
-  return `<section class="manager" id="manager-${t.id}" data-manager="${t.id}"><h4><span class="outcome ${t.result || "idle"}">${{ win: "W", loss: "L", tie: "T" }[t.result] || "–"}</span>${esc(t.name)}${t.manager !== t.name ? "<small>@" + esc(t.manager) + "</small>" : ""}</h4><p>${esc(entry.text)}</p>${teamAnalysis(t)}</section>`;
+  const analysis =
+    entry.quip && entry.text.endsWith(entry.quip)
+      ? entry.text.slice(0, -entry.quip.length).trimEnd()
+      : entry.text;
+  return `<section class="manager" id="manager-${t.id}" data-manager="${t.id}"><h4><span class="outcome ${t.result || "idle"}">${{ win: "W", loss: "L", tie: "T" }[t.result] || "–"}</span>${esc(t.name)}${t.manager !== t.name ? "<small>@" + esc(t.manager) + "</small>" : ""}</h4><p>${esc(analysis)}</p>${entry.quip ? `<div class="roast"><b>The roast</b><p>${esc(entry.quip)}</p></div>` : ""}${teamAnalysis(t)}</section>`;
 }

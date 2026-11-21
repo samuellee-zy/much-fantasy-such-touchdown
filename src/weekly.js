@@ -13,6 +13,7 @@ import { setTimeout as delay } from "node:timers/promises";
 import { buildFacts } from "./analysis/facts.js";
 import { render } from "./site/render.js";
 import { fetchLeague } from "./data/sleeper.js";
+import { researchPreviews } from "./editorial/preview-research.js";
 import { researchNotebook } from "./editorial/notebook.js";
 import { writeManagers } from "./editorial/writing.js";
 
@@ -119,6 +120,13 @@ async function run() {
         ? previous.notebook
         : await researchNotebook(facts, config.model);
   }
+  if (config.columns.preview && facts.upcoming.length) {
+    issue.previewResearch = await researchPreviews(
+      facts,
+      config.model,
+      same ? previous.previewResearch : null,
+    );
+  }
   const html = render(facts, issue, config.columns);
   const managerCount = [...html.matchAll(/data-manager="(\d+)"/g)].map((m) =>
     Number(m[1]),
@@ -131,8 +139,19 @@ async function run() {
     )
   )
     throw new Error("Manager coverage is incomplete.");
-  const rosterEntries = facts.standings.reduce((total, team) => total + (team.lineup ? team.lineup.starters.length + team.lineup.reserves.length : 0), 0);
-  if ([...html.matchAll(/class="player-row" data-player=/g)].length !== rosterEntries) throw new Error("Player coverage is incomplete.");
+  const rosterEntries = facts.standings.reduce(
+    (total, team) =>
+      total +
+      (team.lineup
+        ? team.lineup.starters.length + team.lineup.reserves.length
+        : 0),
+    0,
+  );
+  if (
+    [...html.matchAll(/class="player-row" data-player=/g)].length !==
+    rosterEntries
+  )
+    throw new Error("Player coverage is incomplete.");
   await replaceIfChanged("edition.json", JSON.stringify(issue, null, 2) + "\n");
   await replaceIfChanged("docs/index.html", html);
   console.log(

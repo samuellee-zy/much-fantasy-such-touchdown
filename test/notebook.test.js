@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { verifyArticle } from "../src/editorial/notebook.js";
+import { verifyArticle } from "../src/editorial/sources.js";
 const issue = { season: "2026", week: 10 };
 const subject = { id: "123", name: "Example Runner" };
 const item = {
@@ -43,4 +43,41 @@ test("a notebook item needs a fresh official source and matching passage about t
       now,
     ),
   );
+});
+
+test("fixture-specific research requires the target week and a named upcoming starter", async () => {
+  const { researchPreviews } = await import(
+    "../src/editorial/preview-research.js"
+  );
+  const facts = {
+    ...issue,
+    upcoming: [
+      { ids: [1, 2], lineups: [{ players: [subject] }, { players: [] }] },
+    ],
+  };
+  const next = { ...item, url: "https://www.nfl.com/news/preview-week-11" };
+  let calls = 0;
+  const result = await researchPreviews(facts, "test", null, {
+    now,
+    discover: async () => [next],
+    fetchArticle: async () => page.replace("Week 10", "Week 11"),
+  });
+  assert.equal(result.articles["1-2"].playerId, subject.id);
+  assert.deepEqual(
+    await researchPreviews(facts, "test", result, {
+      now,
+      discover: async () => {
+        calls++;
+        return [];
+      },
+    }),
+    result,
+  );
+  assert.equal(calls, 0);
+  const stale = await researchPreviews(facts, "test", null, {
+    now,
+    discover: async () => [item],
+    fetchArticle: async () => page,
+  });
+  assert.deepEqual(stale.articles, {});
 });

@@ -1,3 +1,4 @@
+import { previewLineups } from "./fixtures.js";
 import assert from "node:assert/strict";
 import { cents } from "./format.js";
 import { playerHistory, lineup, compareLineups } from "./lineups.js";
@@ -209,6 +210,7 @@ export function buildFacts({
       );
     g.rankSum = a.rank + b.rank;
   }
+  previewLineups(upcoming, next, history, directory, slots);
   upcoming.sort((a, b) => a.rankSum - b.rankSum || a.id - b.id);
   return {
     name: league.name,

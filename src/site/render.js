@@ -1,3 +1,4 @@
+import { matchupLab } from "./components/matchup-lab.js";
 import { notebookPanel } from "./components/notebook.js";
 import { points } from "../analysis/format.js";
 import { esc } from "./html.js";
@@ -54,16 +55,19 @@ export function render(f, issue, columns) {
   const link = `https://sleeper.com/leagues/${encodeURIComponent(f.leagueId)}`;
   return `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>${esc(title)}</title><meta name="description" content="${esc(lead.deck)}"><meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(lead.deck)}"><meta name="theme-color" content="#143b30"><link rel="stylesheet" href="./assets/paper.css"></head>
-<body><a class="skip" href="#recap">Skip to matchups</a><header class="bar"><div class="wrap toolbar"><a href="#top" class="brand"><span class="ball" aria-hidden="true"><i></i></span>${esc(f.name)}</a>
+<title>${esc(title)}</title><meta name="description" content="${esc(lead.deck)}"><meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(lead.deck)}"><meta name="theme-color" content="#143b30"><link rel="stylesheet" href="./assets/paper.css"><script type="module" src="./assets/js/issue.js"></script></head>
+<body data-issue="${esc(f.leagueId)}-${esc(f.season)}-${f.week + 1}"><a class="skip" href="#recap">Skip to matchups</a><header class="bar"><div class="wrap toolbar"><a href="#top" class="brand"><span class="ball" aria-hidden="true"><i></i></span>${esc(f.name)}</a>
 <nav aria-label="Issue sections"><a href="#recap">Results</a>${notebook ? '<a href="#notebook">NFL notebook</a>' : ""}${columns.standings ? '<a href="#standings">Standings</a>' : ""}${columns.preview ? '<a href="#next">Week ahead</a>' : ""}</nav><a class="sleeper" href="${link}">View on Sleeper</a></div></header>
 <main class="wrap" id="top"><div class="mast"><p class="mast-title">The Touchdown Post</p><div class="issue-date"><span>${esc(f.season)} SEASON</span><time datetime="${esc(issue.publishedAt.slice(0, 10))}">${date}</time></div></div>
-<article class="lead"><div class="lead-text"><div class="edition-label"><span>Week ${f.week}</span> <b>League report</b></div><h1>${esc(lead.headline)}</h1><p>${esc(lead.deck)}</p></div>
+<article class="lead"><div class="lead-text"><div class="edition-label"><span>Week ${f.week}</span> <b>League report</b></div><h1>${esc(lead.headline)}</h1><p>${esc(lead.deck)}</p><div class="lead-actions"><a class="action" href="#lab" data-enable-js hidden>Explore the matchup lab</a>${columns.preview ? '<a href="#next">Scout the week ahead</a>' : ""}</div></div>
 <figure><img src="./assets/carlisle-dartmouth.jpg" width="1024" height="747" alt="Archival football players sprint across the Polo Grounds during Carlisle versus Dartmouth"><figcaption>Carlisle vs. Dartmouth <span>·</span> <a href="https://www.loc.gov/pictures/item/2014694757/">Library of Congress</a></figcaption></figure></article>
 <div class="stat-strip"><div><span>Top score</span><b>${points(high.score)}</b><small>${esc(high.name)}</small></div><div><span>Closest margin</span><b>${points(closest.margin)}</b><small>points apart</small></div><div><span>League average</span><b>${weekAvg}</b><small>points per team</small></div></div>
-<div class="body-grid"><section id="recap"><div class="section-heading"><div><span class="eyebrow">Week ${f.week} results</span><h2>Matchup breakdown</h2></div><span class="count">${f.games.length} games</span></div>
+${matchupLab(f)}<div class="body-grid"><section id="recap"><div class="section-heading"><div><span class="eyebrow">Week ${f.week} results</span><h2>Matchup breakdown</h2></div><label class="team-jump" data-enable-js hidden>Find your team<select id="team-jump"><option value="">Select a team</option>${f.standings.map((t) => `<option value="${t.id}">${esc(t.name)}</option>`).join("")}</select></label></div>
 ${f.games.map((g) => resultCard(g, f, issue.managers, closest.id)).join("")}${idle.length ? '<article class="match"><h3>Off the slate</h3>' + idle.map((t) => managerReport(t, issue.managers[t.id])).join("") + "</article>" : ""}</section>
-<aside>${columns.standings ? standingsPanel(f) : ""}${columns.awards ? awardPanel(f) : ""}${notebook}</aside></div>
-${columns.preview ? previewSection(f) : ""}</main>
-<footer><div class="wrap"><b>The Touchdown Post</b><span>Week ${f.week} · ${esc(f.season)}</span><a href="${link}">League data from Sleeper</a></div></footer></body></html>\n`.replace(/[ \t]+$/gm, "");
+<aside><section id="roast-draw" class="roast-draw" hidden><span class="eyebrow">League banter</span><h2>Roast roulette</h2><p data-draw-result aria-live="polite">Draw a manager from this week’s roasting tin.</p><div><button type="button">Draw a roast</button><a data-draw-link hidden>Read the recap</a></div></section>${columns.standings ? standingsPanel(f) : ""}${columns.awards ? awardPanel(f) : ""}${notebook}</aside></div>
+${columns.preview ? previewSection(f, issue.previewResearch) : ""}</main>
+<footer><div class="wrap"><b>The Touchdown Post</b><span>Week ${f.week} · ${esc(f.season)}</span><a href="${link}">League data from Sleeper</a></div></footer></body></html>\n`.replace(
+    /[ \t]+$/gm,
+    "",
+  );
 }

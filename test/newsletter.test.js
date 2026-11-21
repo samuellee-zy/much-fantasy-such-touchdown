@@ -226,3 +226,38 @@ test("a missing bench score is retained as unavailable and an eligible bench swa
   assert.match(html, /changes the result to a 10.00-point win/);
   assert.match(html, /no individual score recorded/);
 });
+
+test("preview watches only the new starters and calculates form from completed games", async () => {
+  const data = sample();
+  data.next[0].starters = ["q1", "w1"];
+  data.next[0].players_points = { ...data.next[0].players_points, q1: 9999 };
+  const f = buildFacts(data),
+    line = f.upcoming[0].lineups[0];
+  assert.deepEqual(
+    line.players.map((p) => p.id),
+    ["q1", "w1"],
+  );
+  assert.equal(line.players[0].average, 4500);
+  assert.equal(line.players[0].count, 1);
+  assert.equal(line.players[1].low, 1200);
+  assert.equal(line.players[1].high, 1200);
+});
+
+test("lab exposes only eligible swaps and safely serializes team names", async () => {
+  const data = sample();
+  data.users[0].display_name = "</script><fake>";
+  data.directory.q2.positions = ["TE"];
+  const f = buildFacts(data);
+  const html = render(
+    f,
+    {
+      managers: await writeManagers(f, null, "test", async () => []),
+      publishedAt: "2026-11-21",
+    },
+    allColumns,
+  );
+  const lab = JSON.parse(html.match(/id="lab-data">([^<]*)<\/script>/)[1]);
+  assert.equal(lab[0].teams[0].name, "</script><fake>");
+  assert.deepEqual(lab[0].teams[0].reserves, []);
+  assert.deepEqual(lab[0].teams[1].reserves[0].targets, ["w2"]);
+});
