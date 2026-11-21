@@ -1,0 +1,12 @@
+{
+  "name": "much-fantasy-such-touchdown",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "weekly": "node src/weekly.js --publish",
+    "build": "node src/weekly.js",
+    "test": "node --test"
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "leagueId": "1389372443671420928",
+  "season": "2026",
+  "week": 10,
+  "publishedAt": "2026-11-21T20:50:16.443Z",
+  "managers": {
+    "1": {
+      "hash": "2aec4140b8fc73e845ccf9bfc6058a0f9fb48f8957f24e5e1265182a6988c6aa",
+      "text": "A 64.34-point win over Cooked by Flowers puts your 159.22 in the books. Dak Prescott and Nico Collins put up 69.82 between them. Somebody else can pick up their dinner tab.",
+      "quip": "Somebody else can pick up their dinner tab."
+    },
+    "2": {
+      "hash": "e22289e086853e71508da1e4b3d0c91861a17fd76dccecca11f4af737b8c16da",
+      "text": "You finished 2nd in weekly scoring and took the matchup by 51.34. George Pickens led your starters with 43.50 points from the FLEX slot. Apparently “under” was a clerical error.",
+      "quip": "Apparently “under” was a clerical error."
+    },
+    "3": {
+      "hash": "6816b06efc4420d0500cace02d981b8cf7cb2e2a9659407a7fea7aeb6bf0953f",
+      "text": "I love land handed you a 61.34-point loss despite your 81.62. On the bench, Patrick Mahomes outscored Drake Maye by 42.40 and was eligible for the same QB slot. The bench would like a word with management.",
+      "quip": "The bench would like a word with management."
+    },
+    "4": {
+      "hash": "196d24904f8fd656175a119590fdb39a650839cc592a963c98684c2359e32fe7",
+      "text": "You set the league high at 186.26 and beat Zentio by 79.48. Christian McCaffrey and Brock Purdy put up 83.96 between them. At this point the neighbors are entitled to a noise complaint.",
+      "quip": "At this point the neighbors are entitled to a noise complaint."
+    },
+    "5": {
+      "hash": "074a5fa8d740d750bbc107b3158e5d4df52965a2d7910edb2df7e283dd6184cb",
+      "text": "Love thy Nabers handed you a 79.48-point loss despite your 106.78. On the bench, Alvin Kamara outscored Corey Kiner by 13.90 and was eligible for the same RB slot. The spare running back would like a better parking space.",
+      "quip": "The spare running back would like a better parking space."
+    },
+    "6": {
+      "hash": "4c389b9aff14b778f46de8c184eeb8afdbac22f5f30cbfaaa74b42c21e66e403",
+      "text": "You finished 4th in weekly scoring and took the matchup by 40.04. Jahmyr Gibbs led your starters with 44.20 points from the RB slot. Consider the team name a legally binding promise.",
+      "quip": "Consider the team name a legally binding promise."
+    },
+    "7": {
+      "hash": "3562be6cb62cd59020fd93d67bba76e9a314d4c5b884eccd516e3f26854f5093",
+      "text": "To Infinity & Bijan handed you a 64.34-point loss despite your 94.88. On the bench, Omarion Hampton outscored Rhamondre Stevenson by 15.00 and was eligible for the same RB slot. The flowers appear to have been growing on the bench.",
+      "quip": "The flowers appear to have been growing on the bench."
+    },
+    "8": {
+      "hash": "9d851e28647475c27283eecf8769720c87d6efa30495724de945f1848f0d6bd6",
+      "text": "You beat rngbot1 by 61.34 with an empty starting slot (DEF). Joe Burrow and Ja'Marr Chase put up 74.26 between them. Apparently the empty chair was there for moral support.",
+      "quip": "Apparently the empty chair was there for moral support."
+    },
+    "9": {
+      "hash": "e56a4132568fb553826a4994a70ec786c69f1f6a07af7f1149c2e3bd4bc9a49c",
+      "text": "Never Gonna Gibbs You Up handed you a 40.04-point loss despite your 113.94. On the bench, Pat Freiermuth outscored Sam LaPorta by 8.90 and was eligible for the same TE slot. A tight end dispute is a deeply inconvenient souvenir.",
+      "quip": "A tight end dispute is a deeply inconvenient souvenir."
+    },
+    "10": {
+      "hash": "d49c594072218fca96e2d04f6af9598153da00176751c7cd25c3d4fa3aba9578",
+      "text": "Your 119.96 would have beaten 4 other teams, but Down under performers put the win 51.34 points out of reach. Matthew Stafford and Tony Pollard put up 50.66 between them. Kindly forward the complaint to whoever makes the fixtures.",
+      "quip": "Kindly forward the complaint to whoever makes the fixtures."
+    }
+  },
+  "notebook": [
+    {
+      "playerId": "4034",
+      "url": "https://www.49ers.com/news/christian-mccaffrey-keeps-the-records-falling-in-49ers-46-40-win-over-cowboys",
+      "date": "2026-11-16",
+      "evidence": "McCaffrey turned it into a 74-yard touchdown",
+      "summary": "McCaffrey stayed in to block, slipped free, and turned a short pass from Brock Purdy into a 74-yard touchdown against Dallas."
+    },
+    {
+      "playerId": "9221",
+      "url": "https://www.detroitlions.com/news/notebook-offensive-line-dominant-in-lions-week-10-victory-over-new-england-gibbs-goff-williams",
+      "date": "2026-11-15",
+      "evidence": "Jahmyr Gibbs finished with 153 rushing yards (7.0 avg.) and two touchdowns",
+      "summary": "Gibbs gained 153 rushing yards and another 99 as a receiver against New England in Munich. Both of his touchdowns came on the ground."
+    },
+    {
+      "playerId": "6770",
+      "url": "https://www.bengals.com/news/bengals-steelers-recap-postgame-notes-quotes-stats-week-10-2026-sunday-night-football",
+      "date": "2026-11-16",
+      "evidence": "Joe Burrow lit up the Cincinnati night sky, completing 35-of-44 passes for 409 yards and four touchdowns.",
+      "summary": "Burrow threw for 409 yards against Pittsburgh, with 231 of them going to Ja’Marr Chase. Cincinnati’s next stop is Washington on Monday night."
+    }
+  ]
+}

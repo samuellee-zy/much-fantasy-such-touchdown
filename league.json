@@ -1,0 +1,11 @@
+{
+  "leagueId": "1389372443671420928",
+  "model": "gpt-6-luna",
+  "columns": {
+    "awards": true,
+    "notebook": true,
+    "standings": true,
+    "preview": true
+  },
+  "siteUrl": "https://samuellee-zy.github.io/much-fantasy-such-touchdown/"
+}

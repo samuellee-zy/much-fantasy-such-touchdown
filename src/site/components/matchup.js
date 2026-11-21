@@ -1,0 +1,18 @@
+import { points } from "../../analysis/format.js";
+import { esc } from "../html.js";
+import { teamAnalysis } from "./team-analysis.js";
+export function resultCard(game, f, copy, closestId) {
+  const sides = game.ids
+    .map((id) => f.teams[id])
+    .sort((a, b) => b.score - a.score || a.id - b.id);
+  const label =
+    game.margin === 0 ? "Tie game" : `${points(game.margin)}-point margin`;
+  return `<article class="match" data-game="${game.id}">
+    <header class="match-meta"><span>${game.id === closestId ? "Closest game" : "Final score"}</span><span>${esc(label)}</span></header>
+    <div class="scoreboard">${sides.map((t) => `<div class="score-side ${t.result}"><div class="score-name">${esc(t.name)}</div><strong>${points(t.score)}</strong></div>`).join('<span class="versus">vs</span>')}</div>
+    <div class="reports">${sides.map((t) => managerReport(t, copy[t.id])).join("")}</div>
+  </article>`;
+}
+export function managerReport(t, entry) {
+  return `<section class="manager" id="manager-${t.id}" data-manager="${t.id}"><h4><span class="outcome ${t.result || "idle"}">${{ win: "W", loss: "L", tie: "T" }[t.result] || "–"}</span>${esc(t.name)}${t.manager !== t.name ? "<small>@" + esc(t.manager) + "</small>" : ""}</h4><p>${esc(entry.text)}</p>${teamAnalysis(t)}</section>`;
+}
