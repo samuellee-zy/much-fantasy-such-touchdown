@@ -31,3 +31,5 @@ Each upcoming fixture combines the two listed lineups, recent player form, and a
 The NFL notebook checks short passages against official article text, publication dates, named players, and the issue week. The site links to each original article. Validated reports carry forward on repeat runs of the same issue. If new reporting is unavailable, the weekly league analysis can still publish.
 
 The masthead photograph shows Carlisle playing Dartmouth at the Polo Grounds. [Library of Congress collection record](https://www.loc.gov/pictures/item/2014694757/). DM Sans and DM Serif Text use the SIL Open Font License included with each font in `docs/assets/`.
+
+The [season analysis](https://samuellee-zy.github.io/much-fantasy-such-touchdown/season.html) refreshes with each edition. Its charts compare teams’ weekly points and ranks, and the week selector shows results and standings at that point in the regular season. Schedule impact compares actual head-to-head wins with the share of opponents each team would have beaten every week. Player totals credit each start to the team that fielded the player.

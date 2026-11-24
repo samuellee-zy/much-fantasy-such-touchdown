@@ -2,16 +2,33 @@ import { mean, playerHistory } from "./lineups.js";
 
 export const fixtureKey = (g) => [...g.ids].sort((a, b) => a - b).join("-");
 
-export function previewLineups(games, upcomingRows, history, directory, slots) {
+export function previewLineups(
+  games,
+  upcomingRows,
+  history,
+  directory,
+  slots,
+  rosters = [],
+) {
   const scores = playerHistory(history);
   const rows = new Map(upcomingRows.map((row) => [row.roster_id, row]));
+  const owned = new Map(
+    rosters
+      .filter((r) => Array.isArray(r.players))
+      .map((r) => [r.roster_id, new Set(r.players)]),
+  );
   for (const g of games) {
     g.lineups = g.ids.map((teamId) => {
       const starters = rows.get(teamId)?.starters || [];
       const players = starters
         .flatMap((id, index) => {
           const p = directory[id];
-          if (!p?.name || id === "0") return [];
+          if (
+            !p?.name ||
+            id === "0" ||
+            (owned.has(teamId) && !owned.get(teamId).has(id))
+          )
+            return [];
           const sample = scores.get(id) || [];
           return [
             {

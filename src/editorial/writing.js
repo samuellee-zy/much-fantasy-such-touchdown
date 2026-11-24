@@ -34,7 +34,7 @@ function perspective(t, other, variant) {
       ? `A ${margin}-point win over ${other.name} puts your ${points(t.score)} in the books.`
       : `You finished ${ordinal(t.weekRank)} in weekly scoring and took the matchup by ${margin}.`;
   return variant % 2
-    ? `${other.name} handed you a ${margin}-point loss despite your ${points(t.score)}.`
+    ? `${other.name} beat you by ${margin} points despite your ${points(t.score)}.`
     : `You landed ${ordinal(t.weekRank)} in weekly scoring, ${margin} points shy of ${other.name}.`;
 }
 

@@ -1,0 +1,354 @@
+.season-main {
+  padding-bottom: 3rem;
+}
+.season-lead {
+  display: grid;
+  grid-template-columns: minmax(0, 1.65fr) minmax(230px, 0.75fr);
+  align-items: center;
+  gap: clamp(2rem, 6vw, 7rem);
+  padding: 2.6rem 0 2.1rem;
+}
+.season-lead h1 {
+  font: 400 clamp(2.65rem, 5vw, 5.25rem) / 0.99 var(--serif);
+  letter-spacing: -0.05em;
+  margin: 0.7rem 0 0.85rem;
+  max-width: 18ch;
+  text-wrap: balance;
+}
+.season-lead p {
+  max-width: 63ch;
+  font-size: 1.08rem;
+}
+.season-lead dl {
+  margin: 0;
+  border-left: 2px solid var(--green);
+  padding-left: 1.35rem;
+}
+.season-lead dl > div + div {
+  margin-top: 1rem;
+}
+.season-lead dt {
+  font-weight: 700;
+  color: var(--green);
+}
+.season-lead dd {
+  font: 400 2.5rem/1.1 var(--serif);
+  margin: 0.1rem 0;
+  font-variant-numeric: tabular-nums;
+}
+.season-lead small {
+  display: block;
+  margin-top: 0.24rem;
+  font: 0.9rem/1.4 var(--sans);
+  color: var(--muted);
+}
+.team-form {
+  background: #e6eadc;
+  color: var(--green);
+  padding: 0.75rem 1rem;
+}
+.analysis-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  padding: 0.32rem;
+  background: #e6eadc;
+  border-block: 1px solid #b7c3ad;
+}
+.analysis-tabs a {
+  flex: 1 1 auto;
+  padding: 0.6rem 0.9rem;
+  text-align: center;
+  color: #234b39;
+  font-weight: 700;
+  text-decoration: none;
+}
+.analysis-tabs a:hover {
+  text-decoration: underline;
+}
+.analysis-tabs a[aria-selected="true"] {
+  background: var(--green);
+  color: #fffdee;
+}
+.season-panel {
+  margin-top: 1.7rem;
+}
+.panel-heading {
+  padding: 0.25rem 0 1.2rem;
+}
+.panel-heading h2 {
+  font: 400 clamp(2.05rem, 3.5vw, 3.15rem) / 1.08 var(--serif);
+  letter-spacing: -0.035em;
+  margin-bottom: 0.5rem;
+}
+.panel-heading p,
+.method {
+  max-width: 83ch;
+  color: var(--muted);
+}
+.chart-card {
+  background: #14392e;
+  color: #f9faee;
+  padding: clamp(1rem, 2.6vw, 2rem);
+  border-top: 4px solid #91ad73;
+}
+.chart-top,
+.chart-selects,
+.player-filters,
+.chart-legend,
+.week-readout,
+.week-range {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.8rem 1.5rem;
+}
+.chart-top {
+  justify-content: space-between;
+}
+.chart-top h3 {
+  font: 400 clamp(1.45rem, 2.5vw, 2rem) / 1.15 var(--serif);
+}
+.chart-selects label,
+.paper-filter {
+  display: grid;
+  gap: 0.2rem;
+  font-size: 0.91rem;
+  font-weight: 650;
+}
+.chart-selects {
+  gap: 0.6rem;
+}
+.chart-selects select,
+.paper-filter select {
+  max-width: 100%;
+  min-width: 0;
+  background: #f5f5e9;
+  color: #163e2f;
+  border: 1px solid #9cab99;
+  border-radius: 3px;
+  padding: 0.35rem 0.55rem;
+  font-size: 1rem;
+}
+.chart-surface {
+  margin-top: 1.05rem;
+  cursor: crosshair;
+}
+.chart-surface svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.chart-surface .grid {
+  stroke: #476659;
+  stroke-dasharray: 3 5;
+}
+.chart-surface text {
+  fill: #d5e1d3;
+  font: 13px var(--sans);
+}
+.chart-surface .line {
+  stroke-width: 3;
+  fill: none;
+  stroke-linejoin: round;
+}
+.chart-surface .primary {
+  stroke: #dff78b;
+}
+.chart-surface .secondary {
+  stroke: #8fd6ed;
+}
+.chart-surface .line.secondary {
+  stroke-dasharray: 7 4;
+}
+.chart-surface .dot {
+  fill: #14392e;
+  stroke-width: 2;
+}
+.chart-surface .guide {
+  stroke: #eef3df;
+  opacity: 0.5;
+}
+.chart-legend {
+  font-size: 0.92rem;
+  margin: 0.65rem 0 1.15rem;
+  gap: 0.5rem 1.4rem;
+}
+.chart-legend > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.chart-legend i {
+  width: 1.65rem;
+  border-top: 3px solid #dff78b;
+}
+.chart-legend > span + span i {
+  border-top: 3px dashed #8fd6ed;
+}
+.week-readout {
+  border-top: 1px solid #527062;
+  padding-top: 0.8rem;
+  gap: 0.3rem 1rem;
+}
+.week-readout strong {
+  color: #dff78b;
+}
+.week-readout span {
+  font-variant-numeric: tabular-nums;
+}
+.week-range {
+  font-size: 0.9rem;
+  margin-top: 0.45rem;
+}
+.week-range input {
+  flex: 1;
+  min-width: 6rem;
+  accent-color: #dff78b;
+  cursor: pointer;
+  min-height: 28px;
+}
+.season-table {
+  overflow-x: auto;
+  margin: 1.2rem 0;
+}
+.season-table table {
+  font-size: 1rem;
+  font-variant-numeric: tabular-nums;
+}
+.season-table caption {
+  text-align: left;
+  font: 400 1.55rem var(--serif);
+  margin: 0.25rem 0 0.6rem;
+}
+.season-table td,
+.season-table th {
+  padding: 0.7rem 0.5rem;
+}
+.season-table thead th {
+  font-size: 0.88rem;
+}
+.season-table tbody th {
+  font-weight: 600;
+}
+.season-table tbody td:first-child {
+  width: auto;
+}
+.season-table a {
+  text-decoration-color: #bcc7b8;
+}
+.season-table td:last-child,
+.season-table th:last-child {
+  white-space: normal;
+}
+.season-table .won {
+  color: var(--green);
+  font-weight: 800;
+}
+.season-table .cut-line > * {
+  border-top: 2px dashed #487844;
+}
+.season-table small {
+  display: block;
+  font-weight: 400;
+  color: var(--muted);
+}
+.points-bar,
+.gap-bar {
+  width: min(8rem, 100%);
+  margin: 0.23rem 0 0 auto;
+  height: 5px;
+  display: block;
+  background: #e1e6d9;
+  position: relative;
+}
+.points-bar::after,
+.gap-bar::after {
+  content: "";
+  height: 100%;
+  background: #407459;
+  display: block;
+  width: var(--share);
+}
+.gap-bar {
+  background: linear-gradient(
+    90deg,
+    #e1e6d9 49.5%,
+    #698368 49.5% 50.5%,
+    #e1e6d9 50.5%
+  );
+}
+.gap-bar::after {
+  position: absolute;
+  left: 50%;
+  width: var(--length);
+}
+.gap-bar.below::after {
+  left: auto;
+  right: 50%;
+  background: #a96840;
+}
+.paper-filter {
+  width: fit-content;
+}
+.method {
+  font-size: 0.93rem;
+  border-left: 3px solid #93a88f;
+  padding-left: 0.8rem;
+}
+@media (max-width: 680px) {
+  .season-lead {
+    display: block;
+    padding: 1.45rem 0;
+  }
+  .season-lead dl {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 1.1rem;
+    border-left: 0;
+    border-top: 1px solid var(--rule);
+    padding: 0.75rem 0 0;
+  }
+  .season-lead dl > div {
+    flex: 1;
+    min-width: 0;
+  }
+  .season-lead dl > div + div {
+    margin-top: 0;
+  }
+  .season-lead dd {
+    font-size: 1.9rem;
+  }
+  .analysis-tabs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .analysis-tabs a {
+    padding: 0.45rem 0.25rem;
+    font-size: 0.93rem;
+  }
+  .chart-selects {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .chart-selects select {
+    width: 100%;
+  }
+  .chart-surface text {
+    font-size: 12px;
+  }
+  .season-table table {
+    font-size: 0.9rem;
+  }
+  .season-table td,
+  .season-table th {
+    padding: 0.58rem 0.2rem;
+  }
+  .season-table thead th {
+    font-size: 0.8rem;
+  }
+  .week-readout {
+    align-items: baseline;
+  }
+}

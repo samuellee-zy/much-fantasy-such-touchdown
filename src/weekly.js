@@ -11,7 +11,9 @@ import {
 import { fileURLToPath } from "node:url";
 import { setTimeout as delay } from "node:timers/promises";
 import { buildFacts } from "./analysis/facts.js";
+import { buildSeason } from "./analysis/season.js";
 import { render } from "./site/render.js";
+import { renderSeason } from "./site/season.js";
 import { fetchLeague } from "./data/sleeper.js";
 import { researchPreviews } from "./editorial/preview-research.js";
 import { researchNotebook } from "./editorial/notebook.js";
@@ -92,7 +94,9 @@ async function verifyPages(url, html) {
 async function run() {
   if (publish && git("branch", "--show-current") !== "main")
     throw new Error("Publish from the main branch.");
-  const facts = buildFacts(await fetchLeague(config.leagueId));
+  const snapshot = await fetchLeague(config.leagueId);
+  const facts = buildFacts(snapshot);
+  const season = buildSeason(snapshot, facts);
   const previous = await readPrevious();
   const same =
     previous?.leagueId === config.leagueId &&
@@ -128,6 +132,7 @@ async function run() {
     );
   }
   const html = render(facts, issue, config.columns);
+  const seasonHtml = renderSeason(facts, issue, season, config.columns);
   const managerCount = [...html.matchAll(/data-manager="(\d+)"/g)].map((m) =>
     Number(m[1]),
   );
@@ -154,11 +159,12 @@ async function run() {
     throw new Error("Player coverage is incomplete.");
   await replaceIfChanged("edition.json", JSON.stringify(issue, null, 2) + "\n");
   await replaceIfChanged("docs/index.html", html);
+  await replaceIfChanged("docs/season.html", seasonHtml);
   console.log(
     `Week ${facts.week}: ${facts.games.length} results, ${managerCount.length} managers, ${facts.upcoming.length} upcoming matchups.`,
   );
   if (!publish) return;
-  const files = ["docs/index.html", "edition.json"];
+  const files = ["docs/index.html", "docs/season.html", "edition.json"];
   if (git("status", "--porcelain", "--", ...files)) {
     git("add", "--", ...files);
     git(
@@ -172,7 +178,10 @@ async function run() {
   }
   // Retry a previous local commit's push even when this run's output is unchanged.
   git("push", "origin", "main");
-  await verifyPages(config.siteUrl, html);
+  await Promise.all([
+    verifyPages(config.siteUrl, html),
+    verifyPages(new URL("season.html", config.siteUrl), seasonHtml),
+  ]);
   console.log("Live at " + config.siteUrl);
 }
 

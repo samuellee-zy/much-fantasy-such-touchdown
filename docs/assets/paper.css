@@ -1345,3 +1345,22 @@ summary:focus-visible {
 .play-row button:hover {
   filter: brightness(1.1);
 }
+
+.edition-nav {
+  display: flex;
+  gap: 1.5rem;
+  border-bottom: 1px solid var(--rule);
+}
+.edition-nav a {
+  padding: .58rem 0 .46rem;
+  color: var(--muted);
+  border-bottom: 3px solid transparent;
+  text-decoration: none;
+  font-size: .94rem;
+  font-weight: 650;
+}
+.edition-nav a[aria-current] {
+  border-color: var(--green);
+  color: var(--green);
+}
+.edition-nav a:hover { text-decoration: underline; }

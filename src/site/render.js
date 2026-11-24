@@ -1,3 +1,4 @@
+import { masthead } from "./components/masthead.js";
 import { buildHighlights, highlightReel } from "./components/highlights.js";
 import { wrappedViewer } from "./components/wrapped.js";
 import { profileDialog } from "./components/identity.js";
@@ -26,21 +27,14 @@ export function render(f, issue, columns) {
     Math.round(scores.reduce((a, b) => a + b, 0) / scores.length),
   );
   const idle = f.standings.filter((t) => t.score === null);
-  const date = new Intl.DateTimeFormat("en-GB", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    timeZone: "Europe/London",
-  }).format(new Date(issue.publishedAt));
+  const sections = `<a href="#recap">Results</a>${notebook ? '<a href="#notebook">NFL notebook</a>' : ""}${columns.standings ? '<a href="#standings">Standings</a>' : ""}${columns.preview ? '<a href="#next">Week ahead</a>' : ""}`;
   const title = `Week ${f.week} · The Touchdown Post`;
   const link = `https://sleeper.com/leagues/${encodeURIComponent(f.leagueId)}`;
   return `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${esc(title)}</title><meta name="description" content="${esc(lead.deck)}"><meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(lead.deck)}"><meta name="theme-color" content="#143b30"><link rel="stylesheet" href="./assets/paper.css"><link rel="stylesheet" href="./assets/show.css?v=3"><link rel="stylesheet" href="./assets/wrapped.css"><script type="module" src="./assets/js/issue.js?v=3"></script></head>
-<body data-issue="${esc(f.leagueId)}-${esc(f.season)}-${f.week + 1}"><a class="skip" href="#recap">Skip to matchups</a><header class="bar"><div class="wrap toolbar"><a href="#top" class="brand"><span class="ball" aria-hidden="true"><i></i></span>${esc(f.name)}</a>
-<nav aria-label="Issue sections"><a href="#recap">Results</a>${notebook ? '<a href="#notebook">NFL notebook</a>' : ""}${columns.standings ? '<a href="#standings">Standings</a>' : ""}${columns.preview ? '<a href="#next">Week ahead</a>' : ""}</nav><a class="sleeper" href="${link}">View on Sleeper</a></div></header>
-<main class="wrap" id="top"><div class="mast"><p class="mast-title">The Touchdown Post</p><div class="issue-date"><span>${esc(f.season)} SEASON</span><time datetime="${esc(issue.publishedAt.slice(0, 10))}">${date}</time></div></div>
-${highlightReel(f, scenes)}
+<body data-issue="${esc(f.leagueId)}-${esc(f.season)}-${f.week + 1}">${masthead(f, issue, "week", sections, "recap")}
+<main class="wrap" id="top">${highlightReel(f, scenes)}
 <div class="stat-strip"><div><span>Top score</span><b>${points(high.score)}</b><small>${esc(high.name)}</small></div><div><span>Closest margin</span><b>${points(closest.margin)}</b><small>points apart</small></div><div><span>League average</span><b>${weekAvg}</b><small>points per team</small></div></div>
 ${matchupLab(f, games)}<div class="body-grid"><section id="recap"><div class="section-heading"><div><span class="eyebrow">Week ${f.week} results</span><h2>Matchup breakdown</h2></div><span class="count">${f.games.length} games</span></div>
 ${f.games.map((g) => resultCard(g, f, issue.managers, closest.id)).join("")}${idle.length ? '<article class="match"><h3>Off the slate</h3>' + idle.map((t) => managerReport(t, issue.managers[t.id])).join("") + "</article>" : ""}</section>
